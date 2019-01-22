@@ -8,12 +8,12 @@ tasks:
   types:
     type1:
       interval: 70
-      ratio: 0.20
+      ratio: 0.20 # 0.5
       cost_per_day_before_due_date: 1 
       cost_per_day_after_due_date: 10
     type2: 
       interval: 150
-      ratio: 0.30
+      ratio: 0.30 # 0.5
       cost_per_day_before_due_date: 10 
       cost_per_day_after_due_date: 100
     type3: 

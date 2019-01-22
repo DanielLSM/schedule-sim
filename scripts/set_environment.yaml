@@ -1,0 +1,3 @@
+env_variables:
+  max_episode: 200
+  parameterse_file: task_day_custom.yaml
