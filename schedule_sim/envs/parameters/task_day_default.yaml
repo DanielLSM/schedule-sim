@@ -1,0 +1,23 @@
+aircrafts: 
+  total_number: 10
+hangar:
+  slots: 1 # concurrent number of aircrafts per day
+  limit_tasks_day: 70 #
+tasks:
+  total_number: 100
+  types:
+    type1:
+      interval: 70
+      ratio: 0.20
+      cost_per_day_before_due_date: 1 
+      cost_per_day_after_due_date: 10
+    type2: 
+      interval: 150
+      ratio: 0.30
+      cost_per_day_before_due_date: 10 
+      cost_per_day_after_due_date: 100
+    type3: 
+      interval: 300
+      ratio: 0.50
+      cost_per_day_before_due_date: 20 
+      cost_per_day_after_due_date: 200
