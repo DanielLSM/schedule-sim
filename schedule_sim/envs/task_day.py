@@ -48,14 +48,15 @@ class TaskDay(BaseEnv):
         self.parameters['tasks']['total_number'],1)
 
         self.ntasks_per_type = self.distribute_tasks()
-        # import ipdb
-        # ipdb.set_trace()
+        self.state_trasition_model = self.setup_state_transition_model()
+
         self.state_space = spaces.Box(
             low=0, high=1, shape=self.state_space_shape, dtype=np.float32)
         self.action_space = spaces.Discrete(1)
 
         self.step: int = 0
         self.state = None
+        self.total_return: np.float32 = 0
         self.prev_reward: np.float32 = 0
         self.reward: np.float32 = 0
 
@@ -63,15 +64,18 @@ class TaskDay(BaseEnv):
         if debug:
             self.setup_print()
 
-    # def step(self, action):
-    #     assert self.action_space.contains(
-    #         action), "action outside of state space!"
-    #     self.state = self.state_transition_model()
-    #     self.
+    def step(self, action):
+        assert self.action_space.contains(
+            action), "action outside of state space!"
+
+        self.state -= self.state_trasition_model
+        #TODO: Action will actually be more complext than just 0 and 1
+        self.state[action] = 1
 
     def reset(self):
         self.prev_reward = 0
         self.reward = 0
+        self.total_return = 0
         self.state = self.sample_initial_state()
 
     def sample_initial_state(self):
@@ -80,9 +84,15 @@ class TaskDay(BaseEnv):
     def reward_model(self, action):
         pass
 
-    # def setup_state_transition_model(self):
-    #     self.state_transition_model =
-    #     pass
+    def setup_state_transition_model(self):
+        state_transition_model = []
+        for ttype in self.ntasks_per_type.keys():
+            for _ in range(self.ntasks_per_type[ttype]):
+                state_transition_model.append(\
+                1/self.parameters['tasks']['types'][ttype]['interval'])
+        assert len(state_transition_model) == self.parameters['tasks'][
+            'total_number'], "transition model incorrect!"
+        return state_transition_model
 
     def distribute_tasks(self):
         tasks_distribution = {}
@@ -100,6 +110,8 @@ class TaskDay(BaseEnv):
         print("===Task Distribution===")
         for ttype in self.parameters['tasks']['types'].keys():
             print("Task {} total:{}".format(ttype, self.ntasks_per_type[ttype]))
+        print("===State Transition Model===")
+        print(self.state_trasition_model)
 
 
 if __name__ == '__main__':
