@@ -6,9 +6,7 @@ def yaml_parser(yaml_file: str):
     print(yaml_file)
     with open(yaml_file, 'r') as stream:
         try:
-            parameter_dict = yaml.load(stream)
-            print(parameter_dict)
-            return parameter_dict
+            return yaml.load(stream)
         except yaml.YAMLError as exc:
             print(exc)
 

@@ -7,13 +7,13 @@ tasks:
   total_number: 100
   types:
     type1:
-      interval: 70
-      ratio: 1
+      interval: 50
+      ratio: 0.5
       cost_per_day_before_due_date: 1 
       cost_per_day_after_due_date: 10
     type2: 
-      interval: 150
-      ratio: 0
+      interval: 100
+      ratio: 0.5
       cost_per_day_before_due_date: 10 
       cost_per_day_after_due_date: 100
     type3: 

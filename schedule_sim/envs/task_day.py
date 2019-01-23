@@ -1,5 +1,8 @@
 import yaml
 import pathlib
+import numpy as np
+from gym import spaces
+
 from schedule_sim import BaseEnv
 from schedule_sim.tools.parser import yaml_parser
 
@@ -38,10 +41,65 @@ from schedule_sim.tools.parser import yaml_parser
 
 class TaskDay(BaseEnv):
 
-    def __init__(self, parameters_file):
+    def __init__(self, parameters_file, debug=0):
         BaseEnv.__init__(self)
         self.parameters = yaml_parser(parameters_file)
-        print(self.parameters)
+        self.state_space_shape = (self.parameters['aircrafts']['total_number']* \
+        self.parameters['tasks']['total_number'],1)
+
+        self.ntasks_per_type = self.distribute_tasks()
+        # import ipdb
+        # ipdb.set_trace()
+        self.state_space = spaces.Box(
+            low=0, high=1, shape=self.state_space_shape, dtype=np.float32)
+        self.action_space = spaces.Discrete(1)
+
+        self.step: int = 0
+        self.state = None
+        self.prev_reward: np.float32 = 0
+        self.reward: np.float32 = 0
+
+        # This should be made with loggers later.....
+        if debug:
+            self.setup_print()
+
+    # def step(self, action):
+    #     assert self.action_space.contains(
+    #         action), "action outside of state space!"
+    #     self.state = self.state_transition_model()
+    #     self.
+
+    def reset(self):
+        self.prev_reward = 0
+        self.reward = 0
+        self.state = self.sample_initial_state()
+
+    def sample_initial_state(self):
+        pass
+
+    def reward_model(self, action):
+        pass
+
+    # def setup_state_transition_model(self):
+    #     self.state_transition_model =
+    #     pass
+
+    def distribute_tasks(self):
+        tasks_distribution = {}
+        for task_type in self.parameters['tasks']['types'].keys():
+            tasks_distribution[task_type] = round(\
+            self.parameters['tasks']['types'][task_type]['ratio']*\
+            self.parameters['tasks']['total_number'])
+        return tasks_distribution
+
+    def setup_print(self):
+        print("====Environment setup complete====")
+        print("State Space #S: ")
+        print("Action Space #A: ")
+        print("Initial_state S_0: ")
+        print("===Task Distribution===")
+        for ttype in self.parameters['tasks']['types'].keys():
+            print("Task {} total:{}".format(ttype, self.ntasks_per_type[ttype]))
 
 
 if __name__ == '__main__':
@@ -49,4 +107,4 @@ if __name__ == '__main__':
     parameteres_default_file = pathlib.Path(
         'config/task_day_custom.yaml').absolute()
 
-    env = TaskDay(parameters_file=parameteres_default_file)
+    env = TaskDay(parameters_file=parameteres_default_file, debug=1)
