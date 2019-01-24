@@ -6,11 +6,13 @@ import numpy as np
 def rectified_linear_cost(linear_cost, max_cost, state):
     if state < 0:
         return max_cost
-    elif 0 <= state <= 0:
+    elif 0 <= state < 0.1:
         return 0
     elif 0.1 <= state <= 1:
         return state * linear_cost
     else:
+        import ipdb
+        ipdb.set_trace()
         raise ("STATE IS INVALID!!!")
 
 

@@ -45,7 +45,8 @@ from schedule_sim.tools.costs import rectified_linear_cost
 
 class TaskDay(BaseEnv):
 
-    def __init__(self, parameters_file, reward_scale=10, debug=0):
+    def __init__(self, parameters_file, reward_scale=10, max_steps=300,
+                 debug=0):
         BaseEnv.__init__(self)
         self.parameters = yaml_parser(parameters_file)
         self.observation_space_shape = (self.parameters['aircrafts']['total_number']* \
@@ -54,40 +55,45 @@ class TaskDay(BaseEnv):
         self.ntasks_per_type, self.cost_fnc_per_type = self.distribute_tasks()
         self.state_trasition_model = self.setup_state_transition_model()
         self.reward_scale = reward_scale
+        self.max_steps = max_steps
 
         self.observation_space = spaces.Box(
             low=0, high=1, shape=self.observation_space_shape, dtype=np.float32)
         self.action_space = spaces.Discrete(
-            self.parameters['tasks']['total_number'])
+            self.parameters['tasks']['total_number'] + 1)
 
         # This should be made with loggers later.....
         if debug:
             self.setup_print()
 
     def step(self, action):
+
         assert self.action_space.contains(
             action), "action outside of state space!"
 
         self.state -= self.state_trasition_model
         #TODO: Action will actually be more complext than just 0 and 1
         #TODO: action will probably be the argamax of a Q function, action goes from 1 to N
-        self.state[action] = 1
+
+        if not action == self.parameters['tasks']['total_number']:
+            self.state[action] = 1
 
         reward = self.reward_model()
-        import ipdb
-        ipdb.set_trace()
-        done = False
 
+        if self.steps == self.max_steps:
+            done = True
+            if all(_ >= 0 for _ in self.state):
+                print("NO WRONG ASSIGNMENTS!")
+        else:
+            done = False
+
+        self.steps += 1
         return np.array(self.state), reward, done, {}
 
     def reset(self):
-        # import ipdb
-        # ipdb.set_trace()
+        self.steps = 0
         self.state = self.np_random.uniform(
-            low=0.8, high=1.0, size=(self.observation_space.shape[0],))
-        self.prev_reward = 0
-        self.reward = 0
-        self.total_return = 0
+            low=0.1, high=0.0, size=(self.observation_space.shape[0],))
         return np.array(self.state)
 
     def reward_model(self):
@@ -103,8 +109,6 @@ class TaskDay(BaseEnv):
 
         assert len(costs) == self.parameters["tasks"]["total_number"]
 
-        import ipdb
-        ipdb.set_trace()
         return sum(costs) / self.reward_scale
 
     def setup_state_transition_model(self):
@@ -159,13 +163,15 @@ if __name__ == '__main__':
     s0 = cart.reset()
     print(s0)
     print("=======")
-    env = TaskDay(parameters_file=parameteres_default_file, debug=1)
+    env = TaskDay(
+        parameters_file=parameteres_default_file, reward_scale=10, debug=1)
 
     state = env.reset()
     print(state)
+    # np.array(self.state), reward, done, {}
 
     env.step(0)
-    # for _ in range(10):
-    #     next_state = env.step(0)
-    #     print("=======")
-    #     print(next_state)
+    for _ in range(100):
+        next_state, reward, done, lul = env.step(0)
+        print("=======")
+        print(reward)

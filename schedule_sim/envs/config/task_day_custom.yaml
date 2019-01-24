@@ -4,15 +4,15 @@ hangar:
   slots: 1 # concurrent number of aircrafts per day
   limit_tasks_day: 70 #
 tasks:
-  total_number: 100
+  total_number: 20
   types:
     type1:
-      interval: 50
+      interval: 20
       ratio: 0.5
       linear_cost_before_due_date: -1 
       step_cost_after_due_date: -10
     type2: 
-      interval: 100
+      interval: 20
       ratio: 0.5
       linear_cost_before_due_date: -1 
       step_cost_after_due_date: -10
