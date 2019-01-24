@@ -9,15 +9,15 @@ tasks:
     type1:
       interval: 50
       ratio: 0.5
-      cost_per_day_before_due_date: 1 
-      cost_per_day_after_due_date: 10
+      linear_cost_before_due_date: -1 
+      step_cost_after_due_date: -10
     type2: 
       interval: 100
       ratio: 0.5
-      cost_per_day_before_due_date: 10 
-      cost_per_day_after_due_date: 100
+      linear_cost_before_due_date: -1 
+      step_cost_after_due_date: -10
     type3: 
       interval: 300
       ratio: 0
-      cost_per_day_before_due_date: 20 
-      cost_per_day_after_due_date: 200
+      linear_cost_before_due_date: -1 
+      step_cost_after_due_date: -10
