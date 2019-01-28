@@ -4,10 +4,24 @@ colors = {
     'red': [255, 0, 0, 255],
     'yellow': [255, 255, 0, 255],
     'blue': [0, 0, 255, 255],
-    'green': [0, 255, 0, 100]
+    'green': [0, 255, 0, 255]
 }
 
 RESOURCES_PATH = "../../resources/"
+
+
+def state_to_color(state):
+    if state < 0:
+        return colors['red']
+    elif 0 <= state < 0.1:
+        return colors['yellow']
+    elif 0.1 <= state <= 1:
+        #saturated green
+        return [0, 255, 0, convert_to_saturation(state)]
+    else:
+        import ipdb
+        ipdb.set_trace()
+        raise ("STATE IS INVALID!!!")
 
 
 # Convert from 0 to 1 to 0 to 255
@@ -24,3 +38,7 @@ def scale_to_window(image, width, height):
     scale_y = min(image.height, height) / max(image.height, height)
 
     return scale_x, scale_y
+
+
+if __name__ == '__main__':
+    print("hello")
