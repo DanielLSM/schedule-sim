@@ -39,14 +39,14 @@ class UnrealPython():
 
     #method to be called outside
     def render(self, state=[1, 1], action_idx=1, reward=-10, total_reward=-100):
-        self._draw_loop(state, action_idx,reward, total_reward)
+        self._draw_loop(state, action_idx, reward, total_reward)
         self._draw()
 
-    def _draw_loop(self, state, action_idx,reward, total_reward):
+    def _draw_loop(self, state, action_idx, reward, total_reward):
         self._draw_background()
         self._draw_table(state)
         self._draw_action(action_idx)
-        self._draw_reward(reward,total_reward)
+        self._draw_reward(reward, total_reward)
 
     def _draw(self):
         self._window.switch_to()
@@ -103,7 +103,7 @@ class UnrealPython():
             anchor_y='center').draw()
 
         pyglet.text.Label(
-            str(reward),
+            "{0:0.3f}".format(reward),
             font_name='Arial',
             bold=True,
             font_size=font_size - 3,
@@ -125,12 +125,12 @@ class UnrealPython():
             anchor_y='center').draw()
 
         pyglet.text.Label(
-            str(total_reward),
+            "{0:0.3f}".format(total_reward),
             font_name='Arial',
             bold=True,
             font_size=font_size - 3,
             color=colors['blue'],
-            x=x+250,
+            x=x + 250,
             y=y,
             anchor_x='center',
             anchor_y='center').draw()
@@ -150,7 +150,8 @@ class UnrealPython():
                      x_space_from_border=10,
                      y_space_from_border=10,
                      square_width=50,
-                     font_size=12):
+                     font_size=12,
+                     from_the_bottom=100):
 
         #from bottom left (first task) to top right (last task)
         # assert len(color_array) is not 0, "State is empty!"
@@ -161,7 +162,7 @@ class UnrealPython():
         x_space_from_border = x_space_from_border
         y_space_from_border = y_space_from_border
         square_width = square_width
-        line_y_min = y_space_from_border
+        line_y_min = y_space_from_border + from_the_bottom
         line_y_max = line_y_min + square_width
         labels = []
         label_counter = 0
@@ -193,8 +194,8 @@ class UnrealPython():
                     line_x_max = line_x_min + square_width
                     if task_number is len(color_array):
                         return labels
-                line_y_min = line_y_max
-                line_y_max = line_y_min + square_width
+                line_y_max = line_y_min
+                line_y_min = line_y_max - square_width
         except:
             print("Error when building the table, OpenGL will crash")
             import ipdb

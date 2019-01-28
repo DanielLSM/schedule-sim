@@ -224,12 +224,18 @@ if __name__ == '__main__':
     # np.array(self.state), reward, done, {}
 
     state = env.reset()
+    total_reward = 0
     for _ in range(100):
         action = env.action_space.sample()
         next_state, reward, done, lul = env.step(action)
+        total_reward += reward
         env.render()
         print("=======")
-        print(reward)
+        print("Reward:{0:0.3f} /// Total Reward:{0:0.3f}".format(
+            reward, total_reward))
+        print("=======")
+        print("State:")
+        print(next_state)
         import ipdb
         ipdb.set_trace()
     env.close()
