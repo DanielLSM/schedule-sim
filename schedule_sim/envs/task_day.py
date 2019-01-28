@@ -63,6 +63,8 @@ class TaskDay(BaseEnv):
         self.state_trasition_model = self.setup_state_transition_model()
         self.reward_scale = reward_scale
         self.max_steps = max_steps
+        self._reward = 0
+        self._return = 0
 
         self.observation_space = spaces.Box(
             low=0, high=1, shape=self.observation_space_shape, dtype=np.float32)
@@ -82,14 +84,16 @@ class TaskDay(BaseEnv):
                 state_info=state_info,
                 action_info=action_info)
 
-            def render(self):
-                self._engine.render(self._action)
+    def render(self):
+        assert self._engine is not None, "Trying to render without an engine yaikes"
+        self._engine.render(self.state, self._action, self._reward,
+                            self._return)
 
     #Builds info regarding the type of task and the actions performed
     def info(self):
         state_info = {}  #Index of the state to task state information
         action_info = {}  #Index of the action to task information
-        tasks = 1
+        tasks = 0
         for key in self.ntasks_per_type.keys():
             for _ in range(self.ntasks_per_type[key]):
 
@@ -98,8 +102,7 @@ class TaskDay(BaseEnv):
 
         #TODO: We consider here that one action = assign one task
         for key, value in state_info.items():
-            action_info[key] = "Perform Task " + str(key) + " of type " + str(
-                value)
+            action_info[key] = "Done Task " + str(key) + " of " + str(value)
         action_info[key + 1] = "No Maintenance"
 
         return state_info, action_info
@@ -118,6 +121,8 @@ class TaskDay(BaseEnv):
             self.state[action] = 1
 
         reward = self.reward_model()
+        self._reward = reward
+        self._return += reward
 
         if self.steps == self.max_steps:
             done = True
@@ -134,6 +139,7 @@ class TaskDay(BaseEnv):
 
     def reset(self):
         self.steps = 0
+        self._return = 0
         self.state = self.np_random.uniform(
             low=0.1, high=0.0, size=(self.observation_space.shape[0],))
         return np.array(self.state)
@@ -219,9 +225,11 @@ if __name__ == '__main__':
 
     state = env.reset()
     for _ in range(100):
-        import ipdb
-        ipdb.set_trace()
         action = env.action_space.sample()
         next_state, reward, done, lul = env.step(action)
+        env.render()
         print("=======")
         print(reward)
+        import ipdb
+        ipdb.set_trace()
+    env.close()

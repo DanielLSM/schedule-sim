@@ -18,13 +18,9 @@ class UnrealPython():
                  action_info={},
                  **kwargs):
 
-        import ipdb
-        ipdb.set_trace()
         self._width = number_of_tasks // 10 * square_width + x_space_from_border * 2
         self._height = number_of_tasks // 10 * square_width + y_space_from_border * 2
 
-        import ipdb
-        ipdb.set_trace()
         self._window = pyglet.window.Window(
             width=self._width, height=self._height, display=display_mode)
         glClearColor(255, 255, 255, 255)
@@ -36,20 +32,21 @@ class UnrealPython():
         glEnable(GL_BLEND)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
-        self._clear_draw()
-        # self._draw()
+        # self._clear_draw()
+        self._draw()
 
         # self._draw_background()
 
     #method to be called outside
-    def render(self, action_idx=1):
-        self._draw_loop(action_idx)
+    def render(self, state=[1, 1], action_idx=1, reward=-10, total_reward=-100):
+        self._draw_loop(state, action_idx,reward, total_reward)
         self._draw()
 
-    def _draw_loop(self, action_idx):
+    def _draw_loop(self, state, action_idx,reward, total_reward):
         self._draw_background()
-        self._draw_table()
+        self._draw_table(state)
         self._draw_action(action_idx)
+        self._draw_reward(reward,total_reward)
 
     def _draw(self):
         self._window.switch_to()
@@ -65,7 +62,7 @@ class UnrealPython():
         LOGO = RESOURCES_PATH + 'logo.jpg'
         self._image_draw(LOGO, x=0, y=450, scale=0.3)
 
-    def _draw_action(self, action_idx=1, x=400, y=470, font_size=20):
+    def _draw_action(self, action_idx=1, x=400, y=470, font_size=18):
         pyglet.text.Label(
             "ACTION",
             font_name='Arial',
@@ -81,15 +78,65 @@ class UnrealPython():
             self._action_info[action_idx],
             font_name='Arial',
             bold=True,
-            font_size=font_size,
+            font_size=font_size - 3,
             color=colors['blue'],
             x=x,
             y=y,
             anchor_x='center',
             anchor_y='center').draw()
 
-    def _draw_table(self):
-        labels = self._build_table()
+    def _draw_reward(self,
+                     reward=-10,
+                     total_reward=-100,
+                     x=125,
+                     y=370,
+                     font_size=20):
+        pyglet.text.Label(
+            "Reward",
+            font_name='Arial',
+            bold=True,
+            font_size=font_size + 3,
+            color=colors['blue'],
+            x=x,
+            y=y + 25,
+            anchor_x='center',
+            anchor_y='center').draw()
+
+        pyglet.text.Label(
+            str(reward),
+            font_name='Arial',
+            bold=True,
+            font_size=font_size - 3,
+            color=colors['blue'],
+            x=x,
+            y=y,
+            anchor_x='center',
+            anchor_y='center').draw()
+
+        pyglet.text.Label(
+            "Total Reward",
+            font_name='Arial',
+            bold=True,
+            font_size=font_size + 3,
+            color=colors['blue'],
+            x=x + 250,
+            y=y + 25,
+            anchor_x='center',
+            anchor_y='center').draw()
+
+        pyglet.text.Label(
+            str(total_reward),
+            font_name='Arial',
+            bold=True,
+            font_size=font_size - 3,
+            color=colors['blue'],
+            x=x+250,
+            y=y,
+            anchor_x='center',
+            anchor_y='center').draw()
+
+    def _draw_table(self, state):
+        labels = self._build_table(color_array=state)
         self._batch.draw()
         for _ in labels:
             _.draw()
@@ -116,37 +163,42 @@ class UnrealPython():
         square_width = square_width
         line_y_min = y_space_from_border
         line_y_max = line_y_min + square_width
-        label_counter = 1
         labels = []
+        label_counter = 0
         task_number = 0
-        for __ in range(number_of_rows):
-            line_x_min = x_space_from_border
-            line_x_max = line_x_min + square_width
-            for _ in range(number_of_columns):
-                random_color = state_to_color(color_array[task_number])
-                self._batch.add(4, pyglet.gl.GL_QUADS, None, ('v2i', [
-                    line_x_min, line_y_min, line_x_min, line_y_max, line_x_max,
-                    line_y_max, line_x_max, line_y_min
-                ]), ('c4B', random_color * 4))
-                labels.append(
-                    pyglet.text.Label(
-                        str(label_counter),
-                        font_name='Arial',
-                        bold=True,
-                        font_size=font_size,
-                        color=colors['blue'],
-                        x=line_x_max - square_width // 2,
-                        y=line_y_max - square_width // 2,
-                        anchor_x='center',
-                        anchor_y='center'))
-                label_counter += 1
-                task_number += 1
-                line_x_min = line_x_max
+        try:
+            for __ in range(number_of_rows):
+                line_x_min = x_space_from_border
                 line_x_max = line_x_min + square_width
-                if task_number is len(color_array):
-                    return labels
-            line_y_min = line_y_max
-            line_y_max = line_y_min + square_width
+                for _ in range(number_of_columns):
+                    random_color = state_to_color(color_array[task_number])
+                    self._batch.add(4, pyglet.gl.GL_QUADS, None, ('v2i', [
+                        line_x_min, line_y_min, line_x_min, line_y_max,
+                        line_x_max, line_y_max, line_x_max, line_y_min
+                    ]), ('c4B', random_color * 4))
+                    labels.append(
+                        pyglet.text.Label(
+                            str(label_counter),
+                            font_name='Arial',
+                            bold=True,
+                            font_size=font_size,
+                            color=colors['blue'],
+                            x=line_x_max - square_width // 2,
+                            y=line_y_max - square_width // 2,
+                            anchor_x='center',
+                            anchor_y='center'))
+                    label_counter += 1
+                    task_number += 1
+                    line_x_min = line_x_max
+                    line_x_max = line_x_min + square_width
+                    if task_number is len(color_array):
+                        return labels
+                line_y_min = line_y_max
+                line_y_max = line_y_min + square_width
+        except:
+            print("Error when building the table, OpenGL will crash")
+            import ipdb
+            ipdb.set_trace()
         return labels
 
     def _draw_table_random_color(self,

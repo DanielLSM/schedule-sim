@@ -17,7 +17,7 @@ def state_to_color(state):
         return colors['yellow']
     elif 0.1 <= state <= 1:
         #saturated green
-        return [0, 255, 0, convert_to_saturation(state)]
+        return [0, 255, 0, int(convert_to_saturation(state))]
     else:
         import ipdb
         ipdb.set_trace()
