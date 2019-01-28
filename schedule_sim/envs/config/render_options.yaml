@@ -1,0 +1,9 @@
+#yaml converts everythingh to string, so display is string None instead of None, yayikes
+display:
+  None
+square_width:
+  50
+x_space_from_border:
+  10
+y_space_from_border:
+  10

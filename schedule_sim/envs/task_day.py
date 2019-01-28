@@ -9,6 +9,7 @@ from gym import spaces
 from schedule_sim import BaseEnv
 from schedule_sim.tools.parser import yaml_parser
 from schedule_sim.tools.costs import rectified_linear_cost
+from schedule_sim.tools.graphic_engine import UnrealPython
 
 # A scheduling game assigning aircraft tasks per day
 #
@@ -45,12 +46,18 @@ from schedule_sim.tools.costs import rectified_linear_cost
 
 class TaskDay(BaseEnv):
 
-    def __init__(self, parameters_file, reward_scale=10, max_steps=300,
-                 debug=0):
+    def __init__(self,
+                 parameters_file,
+                 reward_scale=10,
+                 max_steps=300,
+                 debug=0,
+                 rendering=False,
+                 render_file=None):
         BaseEnv.__init__(self)
         self.parameters = yaml_parser(parameters_file)
         self.observation_space_shape = (self.parameters['aircrafts']['total_number']* \
         self.parameters['tasks']['total_number'],1)
+        self._rendering = rendering
 
         self.ntasks_per_type, self.cost_fnc_per_type = self.distribute_tasks()
         self.state_trasition_model = self.setup_state_transition_model()
@@ -63,14 +70,46 @@ class TaskDay(BaseEnv):
             self.parameters['tasks']['total_number'] + 1)
 
         # This should be made with loggers later.....
+        state_info, action_info = self.info()
         if debug:
             self.setup_print()
+        if rendering:
+            assert render_file is not None, "No render file provided"
+            render_options = yaml_parser(render_file)
+            state_info, action_info = self.info()
+            self._engine = UnrealPython(
+                **render_options,
+                state_info=state_info,
+                action_info=action_info)
+
+            def render(self):
+                self._engine.render(self._action)
+
+    #Builds info regarding the type of task and the actions performed
+    def info(self):
+        state_info = {}  #Index of the state to task state information
+        action_info = {}  #Index of the action to task information
+        tasks = 1
+        for key in self.ntasks_per_type.keys():
+            for _ in range(self.ntasks_per_type[key]):
+
+                state_info[tasks] = key
+                tasks += 1
+
+        #TODO: We consider here that one action = assign one task
+        for key, value in state_info.items():
+            action_info[key] = "Perform Task " + str(key) + " of type " + str(
+                value)
+        action_info[key + 1] = "No Maintenance"
+
+        return state_info, action_info
 
     def step(self, action):
 
         assert self.action_space.contains(
             action), "action outside of state space!"
 
+        self._action = action
         self.state -= self.state_trasition_model
         #TODO: Action will actually be more complext than just 0 and 1
         #TODO: action will probably be the argamax of a Q function, action goes from 1 to N
@@ -82,6 +121,9 @@ class TaskDay(BaseEnv):
 
         if self.steps == self.max_steps:
             done = True
+            if self._rendering:
+                self._engine.close()
+
             if all(_ >= 0 for _ in self.state):
                 print("NO WRONG ASSIGNMENTS!")
         else:
@@ -159,19 +201,27 @@ if __name__ == '__main__':
     parameteres_default_file = pathlib.Path(
         'config/task_day_custom.yaml').absolute()
 
+    render_file = pathlib.Path('config/render_options.yaml').absolute()
+
     cart = gym.make("CartPole-v0")
     s0 = cart.reset()
     print(s0)
     print("=======")
     env = TaskDay(
-        parameters_file=parameteres_default_file, reward_scale=10, debug=1)
+        parameters_file=parameteres_default_file,
+        reward_scale=10,
+        debug=1,
+        rendering=True,
+        render_file=render_file)
 
-    state = env.reset()
-    print(state)
+    # print(state)
     # np.array(self.state), reward, done, {}
 
-    env.step(0)
+    state = env.reset()
     for _ in range(100):
-        next_state, reward, done, lul = env.step(0)
+        import ipdb
+        ipdb.set_trace()
+        action = env.action_space.sample()
+        next_state, reward, done, lul = env.step(action)
         print("=======")
         print(reward)

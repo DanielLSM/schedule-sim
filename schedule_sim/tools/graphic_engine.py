@@ -8,25 +8,30 @@ from schedule_sim.tools.graphic_utils import colors, RESOURCES_PATH, scale_to_wi
 
 class UnrealPython():
 
-    def __init__(
-            self,
-            width=500,
-            height=500,
-            display=None,
-            number_of_tasks=100,
-            square_width=50,
-            x_space_from_border=10,
-            y_space_from_border=10,
-    ):
+    def __init__(self,
+                 display_mode=None,
+                 number_of_tasks=100,
+                 square_width=50,
+                 x_space_from_border=10,
+                 y_space_from_border=10,
+                 state_info={1: "Task 1"},
+                 action_info={},
+                 **kwargs):
 
-        width = number_of_tasks // 10 * square_width + x_space_from_border * 2
-        height = number_of_tasks // 10 * square_width + y_space_from_border * 2
+        import ipdb
+        ipdb.set_trace()
+        self._width = number_of_tasks // 10 * square_width + x_space_from_border * 2
+        self._height = number_of_tasks // 10 * square_width + y_space_from_border * 2
 
+        import ipdb
+        ipdb.set_trace()
         self._window = pyglet.window.Window(
-            width=width, height=height, display=display)
+            width=self._width, height=self._height, display=display_mode)
         glClearColor(255, 255, 255, 255)
 
         self._batch = pyglet.graphics.Batch()
+
+        self._state_info, self._action_info = state_info, action_info
 
         glEnable(GL_BLEND)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
@@ -37,13 +42,14 @@ class UnrealPython():
         # self._draw_background()
 
     #method to be called outside
-    def render(self):
-        self._draw_loop()
+    def render(self, action_idx=1):
+        self._draw_loop(action_idx)
         self._draw()
 
-    def _draw_loop(self):
+    def _draw_loop(self, action_idx):
         self._draw_background()
         self._draw_table()
+        self._draw_action(action_idx)
 
     def _draw(self):
         self._window.switch_to()
@@ -58,6 +64,29 @@ class UnrealPython():
     def _draw_background(self):
         LOGO = RESOURCES_PATH + 'logo.jpg'
         self._image_draw(LOGO, x=0, y=450, scale=0.3)
+
+    def _draw_action(self, action_idx=1, x=400, y=470, font_size=20):
+        pyglet.text.Label(
+            "ACTION",
+            font_name='Arial',
+            bold=True,
+            font_size=font_size + 3,
+            color=colors['blue'],
+            x=x,
+            y=y + 25,
+            anchor_x='center',
+            anchor_y='center').draw()
+
+        pyglet.text.Label(
+            self._action_info[action_idx],
+            font_name='Arial',
+            bold=True,
+            font_size=font_size,
+            color=colors['blue'],
+            x=x,
+            y=y,
+            anchor_x='center',
+            anchor_y='center').draw()
 
     def _draw_table(self):
         labels = self._build_table()
@@ -169,9 +198,6 @@ class UnrealPython():
         for _ in labels:
             _.draw()
 
-    def _draw_action(self):
-        pass
-
     def _image_draw(self, file_url, x=0, y=0, scale=0, title='image_stream'):
         image_stream = open(file_url, 'rb')
         image = pyglet.image.load(title, file=image_stream)
@@ -195,11 +221,9 @@ class UnrealPython():
 if __name__ == "__main__":
 
     import ipdb
-    UP = UnrealPython(500, 500)
+    UP = UnrealPython()
 
     UP.render()
-    ipdb.set_trace()
-    UP._draw_table()
     UP.render()
     ipdb.set_trace()
     UP.render()
