@@ -236,6 +236,4 @@ if __name__ == '__main__':
         print("=======")
         print("State:")
         print(next_state)
-        import ipdb
-        ipdb.set_trace()
     env.close()
