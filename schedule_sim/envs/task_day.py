@@ -231,9 +231,13 @@ if __name__ == '__main__':
         total_reward += reward
         env.render()
         print("=======")
-        print("Reward:{0:0.3f} /// Total Reward:{0:0.3f}".format(
+        print("Action: ", action)
+        print("=======")
+        print("Reward: {0:0.3f} /// Total Reward: {0:0.3f}".format(
             reward, total_reward))
         print("=======")
         print("State:")
         print(next_state)
+        import ipdb
+        ipdb.set_trace()
     env.close()
