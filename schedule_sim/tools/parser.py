@@ -3,7 +3,7 @@ import pathlib
 
 
 def yaml_parser(yaml_file: str):
-    print(yaml_file)
+    # print(yaml_file)
     with open(yaml_file, 'r') as stream:
         try:
             return yaml.load(stream)

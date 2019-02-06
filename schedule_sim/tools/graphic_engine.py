@@ -1,9 +1,10 @@
 #for more inspiration info check https://github.com/openai/gym/blob/master/gym/envs/classic_control/rendering.py
 import pyglet
+import random
 from pyglet.gl import *
 
-import random
-from schedule_sim.tools.graphic_utils import colors, RESOURCES_PATH, scale_to_window, convert_to_saturation, state_to_color
+from schedule_sim import RESOURCES_DIR
+from schedule_sim.tools.graphic_utils import colors, scale_to_window, convert_to_saturation, state_to_color
 
 
 class UnrealPython():
@@ -59,7 +60,7 @@ class UnrealPython():
         self._window.clear()
 
     def _draw_background(self):
-        LOGO = RESOURCES_PATH + 'logo.jpg'
+        LOGO = RESOURCES_DIR / 'logo.jpg'
         self._image_draw(LOGO, x=0, y=450, scale=0.3)
 
     def _draw_action(self, action_idx=1, x=400, y=470, font_size=18):

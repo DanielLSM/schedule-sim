@@ -106,5 +106,5 @@ venv.bak/
 ############################################ MY IGNORES
 
 .vscode/
-resources/
+# resources/
 
