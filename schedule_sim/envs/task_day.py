@@ -56,7 +56,7 @@ class TaskDay(BaseEnv):
         BaseEnv.__init__(self)
         self.parameters = yaml_parser(parameters_file)
         self.observation_space_shape = (self.parameters['aircrafts']['total_number']* \
-        self.parameters['tasks']['total_number'],1)
+        self.parameters['tasks']['total_number'],)
         self._rendering = rendering
 
         self.ntasks_per_type, self.cost_fnc_per_type = self.distribute_tasks()
@@ -86,8 +86,12 @@ class TaskDay(BaseEnv):
 
     def render(self):
         assert self._engine is not None, "Trying to render without an engine yaikes"
-        self._engine.render(self.state, self._action, self._reward,
-                            self._return)
+        try:
+            self._engine.render(self.state, self._action, self._reward,
+                                self._return)
+        except:
+            import ipdb
+            ipdb.set_trace()
 
     #Builds info regarding the type of task and the actions performed
     def info(self):
