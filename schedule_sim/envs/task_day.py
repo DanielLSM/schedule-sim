@@ -130,8 +130,8 @@ class TaskDay(BaseEnv):
 
         if self.steps == self.max_steps:
             done = True
-            if self._rendering:
-                self._engine.close()
+            # if self._rendering:
+            #     self._engine.close()
 
             if all(_ >= 0 for _ in self.state):
                 print("NO WRONG ASSIGNMENTS!")
