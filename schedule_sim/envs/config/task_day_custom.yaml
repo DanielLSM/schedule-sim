@@ -1,4 +1,4 @@
-aircrafts: 
+aircrafts:
   total_number: 1
 hangar:
   slots: 1 # concurrent number of aircrafts per day
@@ -7,20 +7,46 @@ tasks:
   total_number: 20
   types:
     type1:
-      interval: 20
-      ratio: 0.5
-      linear_cost_before_due_date: -1 
-      step_cost_after_due_date: -10
+      interval: 40
+      ratio: 1
+      linear_cost_before_due_date: -1
+      step_cost_after_due_date: -2
       info: "High-Frequnecy Task"
-    type2: 
-      interval: 20
-      ratio: 0.5
-      linear_cost_before_due_date: -1 
-      step_cost_after_due_date: -10
+    type2:
+      interval: 40
+      ratio: 0
+      linear_cost_before_due_date: -1
+      step_cost_after_due_date: -2
       info: "Medium-Frequnecy Task"
-    type3: 
+    type3:
       interval: 300
       ratio: 0
-      linear_cost_before_due_date: -1 
+      linear_cost_before_due_date: -1
       step_cost_after_due_date: -10
       info: "Low-Frequnecy Task"
+# aircrafts:
+#   total_number: 1
+# hangar:
+#   slots: 1 # concurrent number of aircrafts per day
+#   limit_tasks_day: 70 #
+# tasks:
+#   total_number: 20
+#   types:
+#     type1:
+#       interval: 40
+#       ratio: 0.5
+#       linear_cost_before_due_date: -1
+#       step_cost_after_due_date: -10
+#       info: "High-Frequnecy Task"
+#     type2:
+#       interval: 40
+#       ratio: 0.5
+#       linear_cost_before_due_date: -1
+#       step_cost_after_due_date: -10
+#       info: "Medium-Frequnecy Task"
+#     type3:
+#       interval: 300
+#       ratio: 0
+#       linear_cost_before_due_date: -1
+#       step_cost_after_due_date: -10
+#       info: "Low-Frequnecy Task"
