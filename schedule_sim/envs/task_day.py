@@ -121,10 +121,13 @@ class TaskDay(BaseEnv):
         #TODO: Action will actually be more complext than just 0 and 1
         #TODO: action will probably be the argamax of a Q function, action goes from 1 to N
 
+        reward_action = 0.
         if not action == self.parameters['tasks']['total_number']:
+            reward_action = 0.7
             self.state[action] = 1
 
         reward = self.reward_model()
+        reward += reward_action
         self._reward = reward
         self._return += reward
 

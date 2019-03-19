@@ -10,7 +10,7 @@ tasks:
       interval: 40
       ratio: 1
       linear_cost_before_due_date: -1
-      step_cost_after_due_date: -2
+      step_cost_after_due_date: -10
       info: "High-Frequnecy Task"
     type2:
       interval: 40
